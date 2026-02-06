@@ -12,10 +12,10 @@
         }
 
         body {
-            background: #121212; /* Dark elegant background */
+            background: #121212;
             height: 100vh;
             display: flex;
-            flex-direction: column; /* Stack title above image */
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -48,10 +48,9 @@
 
         img {
             max-width: 85vw;
-            max-height: 70vh;
+            max-height: 60vh; /* Reduced height slightly to fit the button on screen */
             border-radius: 15px;
             display: block;
-            /* Smooth transition for when the source changes */
             transition: opacity 0.3s ease;
         }
 
@@ -61,6 +60,26 @@
             color: #666;
             text-transform: uppercase;
             letter-spacing: 1px;
+        }
+
+        /* NEW BUTTON STYLES */
+        .about-btn {
+            margin-top: 2rem;
+            padding: 12px 30px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 30px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+        }
+
+        .about-btn:hover {
+            background: white;
+            color: #121212;
+            border-color: white;
         }
 
         @keyframes fadeInDown {
@@ -79,11 +98,11 @@
 
     <p class="hint">Click the image to swap</p>
 
+    <a href="aboutme.html" class="about-btn">About Me</a>
+
     <script>
         function changeImage() {
             const img = document.getElementById('mainImage');
-            
-            // Check current source and toggle
             if (img.src.includes('fem.png')) {
                 img.src = 'images/kimmmmn.png';
             } else {
