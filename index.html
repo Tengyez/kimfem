@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kim is fem</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #121212; /* Dark elegant background */
+            height: 100vh;
+            display: flex;
+            flex-direction: column; /* Stack title above image */
+            justify-content: center;
+            align-items: center;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: white;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 200;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            animation: fadeInDown 1s ease;
+        }
+
+        .image-container {
+            cursor: pointer;
+            position: relative;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .image-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        img {
+            max-width: 85vw;
+            max-height: 70vh;
+            border-radius: 15px;
+            display: block;
+            /* Smooth transition for when the source changes */
+            transition: opacity 0.3s ease;
+        }
+
+        .hint {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Kim is fem</h1>
+
+    <div class="image-container" onclick="changeImage()">
+        <img id="mainImage" src="images/fem.png" alt="Kim's Portrait">
+    </div>
+
+    <p class="hint">Click the image to swap</p>
+
+    <script>
+        function changeImage() {
+            const img = document.getElementById('mainImage');
+            
+            // Check current source and toggle
+            if (img.src.includes('fem.png')) {
+                img.src = 'images/kimmmmn.png';
+            } else {
+                img.src = 'images/fem.png';
+            }
+        }
+    </script>
+
+</body>
+</html>
