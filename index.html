@@ -20,6 +20,7 @@
             align-items: center;
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             color: white;
+            overflow: hidden;
         }
 
         h1 {
@@ -48,10 +49,15 @@
 
         img {
             max-width: 85vw;
-            max-height: 60vh; /* Reduced height slightly to fit the button on screen */
+            max-height: 60vh;
             border-radius: 15px;
             display: block;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease-in-out;
+            opacity: 1;
+        }
+
+        .fade-out {
+            opacity: 0;
         }
 
         .hint {
@@ -62,7 +68,6 @@
             letter-spacing: 1px;
         }
 
-        /* NEW BUTTON STYLES */
         .about-btn {
             margin-top: 2rem;
             padding: 12px 30px;
@@ -103,11 +108,18 @@
     <script>
         function changeImage() {
             const img = document.getElementById('mainImage');
-            if (img.src.includes('fem.png')) {
-                img.src = 'images/kimmmmn.png';
-            } else {
-                img.src = 'images/fem.png';
-            }
+            
+            img.classList.add('fade-out');
+
+            setTimeout(() => {
+                if (img.src.includes('fem.png')) {
+                    img.src = 'images/kimmmmn.png';
+                } else {
+                    img.src = 'images/fem.png';
+                }
+
+                img.classList.remove('fade-out');
+            }, 400); 
         }
     </script>
 
