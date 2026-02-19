@@ -63,12 +63,12 @@
         function pop() {
             count++;
             counterVal.innerText = count;
-            popImg.src = 'open.jpg';
+            popImg.src = 'poppedkim.png';
             popSound.currentTime = 0;
             popSound.play();
 
             setTimeout(() => {
-                popImg.src = 'closed.jpg';
+                popImg.src = 'unpoppedkim.png';
             }, 100);
         }
 
