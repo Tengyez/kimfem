@@ -2,9 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>POPKIM</title>
     <style>
+        /* 1. LAYOUT & APPEARANCE */
         body {
             display: flex;
             flex-direction: column;
@@ -12,37 +13,40 @@
             justify-content: center;
             height: 100vh;
             margin: 0;
-            background-color: #bdaa90; 
+            background-color: #bdaa90; /* Your custom tan color */
             font-family: 'Arial Black', 'Arial', sans-serif;
-            /* Prevents blue highlight on mobile when tapping fast */
-            -webkit-tap-highlight-color: transparent; 
             overflow: hidden;
             user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #title {
-            font-size: 4rem;
+            font-size: clamp(3rem, 10vw, 5rem);
             color: white;
             text-shadow: 6px 6px 0px #333;
             margin: 0;
-            letter-spacing: 2px;
+            text-transform: uppercase;
         }
 
         #counter {
-            font-size: 5rem;
-            font-weight: bold;
+            font-size: clamp(4rem, 12vw, 6rem);
             color: white;
             text-shadow: 4px 4px 0px #333;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
+        /* 2. THE IMAGE STYLE */
         #pop-img {
-            height: 60vh;
+            max-height: 65vh;
+            max-width: 90vw;
             cursor: pointer;
-            transition: transform 0.05s;
+            object-fit: contain;
+            /* Smooth transition for the 'squish' effect */
+            transition: transform 0.05s ease-in-out;
         }
 
-        #pop-img:active {
+        /* Slight shrink when clicking */
+        .pushing {
             transform: scale(0.95);
         }
     </style>
@@ -52,42 +56,58 @@
     <h1 id="title">POPKIM</h1>
     <div id="counter">0</div>
     
-    <img id="pop-img" src="unpoppedkim.png" alt="Pop Kim">
+    <img id="pop-img" src="./unpoppedkim.png" alt="POPKIM">
 
     <script>
-        const popImg = document.getElementById('pop-img');
-        const counterVal = document.getElementById('counter');
+        // --- CONFIGURATION ---
+        const imgElement = document.getElementById('pop-img');
+        const counterElement = document.getElementById('counter');
         
-        // Link to your specific sound file
-        const popSound = new Audio('Pop Cat sound.mp3');
-        
+        const soundPath = './Pop Cat sound.mp3';
+        const imgUnpopped = './unpoppedkim.png';
+        const imgPopped = './poppedkim.png';
+
         let count = 0;
+        const popSound = new Audio(soundPath);
 
-        function pop() {
+        // --- PRELOAD IMAGES (Prevents white flickering) ---
+        const preloadImg = new Image();
+        preloadImg.src = imgPopped;
+
+        // --- THE POP LOGIC ---
+        function startPop(e) {
+            if (e) e.preventDefault(); // Stops double-firing on mobile
+
             count++;
-            counterVal.innerText = count;
-            
-            // Swap to the popped version
-            popImg.src = 'poppedkim.png';
-            
-            // Reset and play sound
-            popSound.currentTime = 0;
-            popSound.play();
+            counterElement.innerText = count;
 
-            // Return to normal after 100ms
-            setTimeout(() => {
-                popImg.src = 'unpoppedkim.png';
-            }, 100);
+            // Change image and add "squish" effect
+            imgElement.src = imgPopped;
+            imgElement.classList.add('pushing');
+
+            // Play Sound
+            popSound.currentTime = 0;
+            popSound.play().catch(err => console.log("Sound blocked until first interaction"));
         }
 
-        // Desktop Click
-        popImg.addEventListener('mousedown', pop);
+        function endPop() {
+            // Change back to normal
+            imgElement.src = imgUnpopped;
+            imgElement.classList.remove('pushing');
+        }
+
+        // --- EVENT LISTENERS ---
         
-        // Mobile Touch
-        popImg.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            pop();
-        });
+        // Mouse Controls (Desktop)
+        imgElement.addEventListener('mousedown', startPop);
+        window.addEventListener('mouseup', endPop);
+
+        // Touch Controls (Mobile)
+        imgElement.addEventListener('touchstart', startPop);
+        window.addEventListener('touchend', endPop);
+
+        // Debugging Log
+        console.log("POPKIM script initialized. Subfolder mode: ON.");
     </script>
 </body>
 </html>
