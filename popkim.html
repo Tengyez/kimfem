@@ -17,6 +17,7 @@
             font-family: 'Arial Black', 'Arial', sans-serif;
             overflow: hidden;
             user-select: none;
+            /* Fixes the blue box flash on mobile taps */
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -25,29 +26,29 @@
             color: white;
             text-shadow: 6px 6px 0px #333;
             margin: 0;
-            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         #counter {
             font-size: clamp(4rem, 12vw, 6rem);
             color: white;
             text-shadow: 4px 4px 0px #333;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
         }
 
         /* 2. THE IMAGE STYLE */
         #pop-img {
-            max-height: 65vh;
+            max-height: 60vh;
             max-width: 90vw;
             cursor: pointer;
             object-fit: contain;
-            /* Smooth transition for the 'squish' effect */
+            /* Smooth scaling effect */
             transition: transform 0.05s ease-in-out;
         }
 
-        /* Slight shrink when clicking */
+        /* The 'Squish' effect when clicking */
         .pushing {
-            transform: scale(0.95);
+            transform: scale(0.92);
         }
     </style>
 </head>
@@ -63,6 +64,7 @@
         const imgElement = document.getElementById('pop-img');
         const counterElement = document.getElementById('counter');
         
+        // Exact filenames as provided
         const soundPath = './Pop Cat sound.mp3';
         const imgUnpopped = './unpoppedkim.png';
         const imgPopped = './poppedkim.png';
@@ -70,44 +72,45 @@
         let count = 0;
         const popSound = new Audio(soundPath);
 
-        // --- PRELOAD IMAGES (Prevents white flickering) ---
+        // --- PRELOAD THE "OPEN" IMAGE ---
+        // This prevents a "white flash" on the first click
         const preloadImg = new Image();
         preloadImg.src = imgPopped;
 
         // --- THE POP LOGIC ---
         function startPop(e) {
-            if (e) e.preventDefault(); // Stops double-firing on mobile
+            if (e) e.preventDefault(); 
 
             count++;
             counterElement.innerText = count;
 
-            // Change image and add "squish" effect
+            // Visual & Sound Feedback
             imgElement.src = imgPopped;
             imgElement.classList.add('pushing');
-
-            // Play Sound
+            
+            // Reset sound to start and play
             popSound.currentTime = 0;
-            popSound.play().catch(err => console.log("Sound blocked until first interaction"));
+            popSound.play().catch(err => {
+                console.log("Audio needs user interaction first.");
+            });
         }
 
         function endPop() {
-            // Change back to normal
             imgElement.src = imgUnpopped;
             imgElement.classList.remove('pushing');
         }
 
-        // --- EVENT LISTENERS ---
+        // --- EVENT LISTENERS (Desktop + Mobile) ---
         
-        // Mouse Controls (Desktop)
+        // Mouse Events
         imgElement.addEventListener('mousedown', startPop);
         window.addEventListener('mouseup', endPop);
 
-        // Touch Controls (Mobile)
+        // Touch Events
         imgElement.addEventListener('touchstart', startPop);
         window.addEventListener('touchend', endPop);
 
-        // Debugging Log
-        console.log("POPKIM script initialized. Subfolder mode: ON.");
+        console.log("POPKIM initialized on popkim.html");
     </script>
 </body>
 </html>
