@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POPKIM</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #bdaa90; 
+            font-family: 'Arial Black', 'Arial', sans-serif; /* Using a thicker font for the meme look */
+            overflow: hidden;
+            user-select: none;
+        }
+
+        /* Styling for the new Title */
+        #title {
+            font-size: 4rem;
+            color: white;
+            text-shadow: 6px 6px 0px #333;
+            margin: 0;
+            letter-spacing: 2px;
+        }
+
+        #counter {
+            font-size: 5rem;
+            font-weight: bold;
+            color: white;
+            text-shadow: 4px 4px 0px #333;
+            margin-bottom: 20px;
+        }
+
+        #pop-img {
+            height: 60vh; /* Shrunk slightly to make room for the title */
+            cursor: pointer;
+            transition: transform 0.05s;
+        }
+
+        #pop-img:active {
+            transform: scale(0.95);
+        }
+    </style>
+</head>
+<body>
+
+    <h1 id="title">POPKIM</h1>
+    
+    <div id="counter">0</div>
+    <img id="pop-img" src="closed.jpg" alt="Pop Kim">
+
+    <script>
+        const popImg = document.getElementById('pop-img');
+        const counterVal = document.getElementById('counter');
+        const popSound = new Audio('pop.mp3');
+        
+        let count = 0;
+
+        function pop() {
+            count++;
+            counterVal.innerText = count;
+            popImg.src = 'open.jpg';
+            popSound.currentTime = 0;
+            popSound.play();
+
+            setTimeout(() => {
+                popImg.src = 'closed.jpg';
+            }, 100);
+        }
+
+        popImg.addEventListener('mousedown', pop);
+        popImg.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            pop();
+        });
+    </script>
+</body>
+</html>
