@@ -13,12 +13,13 @@
             height: 100vh;
             margin: 0;
             background-color: #bdaa90; 
-            font-family: 'Arial Black', 'Arial', sans-serif; /* Using a thicker font for the meme look */
+            font-family: 'Arial Black', 'Arial', sans-serif;
+            /* Prevents blue highlight on mobile when tapping fast */
+            -webkit-tap-highlight-color: transparent; 
             overflow: hidden;
             user-select: none;
         }
 
-        /* Styling for the new Title */
         #title {
             font-size: 4rem;
             color: white;
@@ -36,7 +37,7 @@
         }
 
         #pop-img {
-            height: 60vh; /* Shrunk slightly to make room for the title */
+            height: 60vh;
             cursor: pointer;
             transition: transform 0.05s;
         }
@@ -49,13 +50,15 @@
 <body>
 
     <h1 id="title">POPKIM</h1>
-    
     <div id="counter">0</div>
-    <img id="pop-img" src="closed.jpg" alt="Pop Kim">
+    
+    <img id="pop-img" src="unpoppedkim.png" alt="Pop Kim">
 
     <script>
-        const popImg = document.getElementById('unpoppedkim.png');
+        const popImg = document.getElementById('pop-img');
         const counterVal = document.getElementById('counter');
+        
+        // Link to your specific sound file
         const popSound = new Audio('Pop Cat sound.mp3');
         
         let count = 0;
@@ -63,16 +66,24 @@
         function pop() {
             count++;
             counterVal.innerText = count;
+            
+            // Swap to the popped version
             popImg.src = 'poppedkim.png';
+            
+            // Reset and play sound
             popSound.currentTime = 0;
             popSound.play();
 
+            // Return to normal after 100ms
             setTimeout(() => {
                 popImg.src = 'unpoppedkim.png';
             }, 100);
         }
 
+        // Desktop Click
         popImg.addEventListener('mousedown', pop);
+        
+        // Mobile Touch
         popImg.addEventListener('touchstart', (e) => {
             e.preventDefault();
             pop();
