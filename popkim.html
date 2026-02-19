@@ -1,116 +1,137 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>POPKIM</title>
-    <style>
-        /* 1. LAYOUT & APPEARANCE */
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #bdaa90; /* Your custom tan color */
-            font-family: 'Arial Black', 'Arial', sans-serif;
-            overflow: hidden;
-            user-select: none;
-            /* Fixes the blue box flash on mobile taps */
-            -webkit-tap-highlight-color: transparent;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>POPKIM</title>
 
-        #title {
-            font-size: clamp(3rem, 10vw, 5rem);
-            color: white;
-            text-shadow: 6px 6px 0px #333;
-            margin: 0;
-            letter-spacing: 2px;
-        }
+<style>
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #bdaa90;
+    font-family: 'Arial Black', 'Arial', sans-serif;
+    overflow: hidden;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+}
 
-        #counter {
-            font-size: clamp(4rem, 12vw, 6rem);
-            color: white;
-            text-shadow: 4px 4px 0px #333;
-            margin-bottom: 20px;
-        }
+#title {
+    font-size: clamp(3rem, 10vw, 5rem);
+    color: white;
+    text-shadow: 6px 6px 0px #333;
+    margin: 0;
+    letter-spacing: 2px;
+}
 
-        /* 2. THE IMAGE STYLE */
-        #pop-img {
-            max-height: 60vh;
-            max-width: 90vw;
-            cursor: pointer;
-            object-fit: contain;
-            /* Smooth scaling effect */
-            transition: transform 0.05s ease-in-out;
-        }
+#counter {
+    font-size: clamp(4rem, 12vw, 6rem);
+    color: white;
+    text-shadow: 4px 4px 0px #333;
+    margin-bottom: 20px;
+}
 
-        /* The 'Squish' effect when clicking */
-        .pushing {
-            transform: scale(0.92);
-        }
-    </style>
+#pop-img {
+    max-height: 60vh;
+    max-width: 90vw;
+    cursor: pointer;
+    object-fit: contain;
+    transition: transform 0.05s ease-in-out;
+}
+
+.pushing {
+    transform: scale(0.92);
+}
+</style>
 </head>
+
 <body>
 
-    <h1 id="title">POPKIM</h1>
-    <div id="counter">0</div>
-    
-    <img id="pop-img" src="./unpoppedkim.png" alt="POPKIM">
+<h1 id="title">POPKIM</h1>
+<div id="counter">0</div>
 
-    <script>
-        // --- CONFIGURATION ---
-        const imgElement = document.getElementById('pop-img');
-        const counterElement = document.getElementById('counter');
-        
-        // Exact filenames as provided
-        const soundPath = './Pop Cat sound.mp3';
-        const imgUnpopped = './unpoppedkim.png';
-        const imgPopped = './poppedkim.png';
+<img id="pop-img" src="./images/unpoppedkim.png" alt="POPKIM">
 
-        let count = 0;
-        const popSound = new Audio(soundPath);
+<script>
 
-        // --- PRELOAD THE "OPEN" IMAGE ---
-        // This prevents a "white flash" on the first click
-        const preloadImg = new Image();
-        preloadImg.src = imgPopped;
+const imgElement = document.getElementById('pop-img');
+const counterElement = document.getElementById('counter');
 
-        // --- THE POP LOGIC ---
-        function startPop(e) {
-            if (e) e.preventDefault(); 
+const soundPath = './images/KimmySound.mp3';
+const imgUnpopped = './images/unpoppedkim.png';
+const imgPopped = './images/poppedkim.png';
 
-            count++;
-            counterElement.innerText = count;
+let count = 0;
 
-            // Visual & Sound Feedback
-            imgElement.src = imgPopped;
-            imgElement.classList.add('pushing');
-            
-            // Reset sound to start and play
-            popSound.currentTime = 0;
-            popSound.play().catch(err => {
-                console.log("Audio needs user interaction first.");
-            });
-        }
+const preloadImg = new Image();
+preloadImg.src = imgPopped;
 
-        function endPop() {
-            imgElement.src = imgUnpopped;
-            imgElement.classList.remove('pushing');
-        }
 
-        // --- EVENT LISTENERS (Desktop + Mobile) ---
-        
-        // Mouse Events
-        imgElement.addEventListener('mousedown', startPop);
-        window.addEventListener('mouseup', endPop);
+const POOL_SIZE = 30;
+const audioPool = [];
+let audioIndex = 0;
 
-        // Touch Events
-        imgElement.addEventListener('touchstart', startPop);
-        window.addEventListener('touchend', endPop);
+for (let i = 0; i < POOL_SIZE; i++) {
+    const audio = new Audio(soundPath);
+    audio.preload = "auto";
+    audio.volume = 1;
+    audioPool.push(audio);
+}
 
-        console.log("POPKIM initialized on popkim.html");
-    </script>
+function playPopSound() {
+    const sound = audioPool[audioIndex];
+    sound.currentTime = 0;
+    sound.play();
+
+    audioIndex++;
+    if (audioIndex >= POOL_SIZE) audioIndex = 0;
+}
+
+
+function startPop(e) {
+    if (e) e.preventDefault();
+
+    count++;
+    counterElement.innerText = count;
+
+    imgElement.src = imgPopped;
+    imgElement.classList.add('pushing');
+
+    playPopSound();
+
+    clearTimeout(popTimeout);
+    popTimeout = setTimeout(() => {
+        imgElement.src = imgUnpopped;
+        imgElement.classList.remove('pushing');
+    }, 50);
+}
+
+
+function endPop() {
+    imgElement.src = imgUnpopped;
+    imgElement.classList.remove('pushing');
+}
+
+
+imgElement.addEventListener('mousedown', startPop);
+window.addEventListener('mouseup', endPop);
+
+imgElement.addEventListener('touchstart', startPop, { passive: false });
+window.addEventListener('touchend', endPop);
+
+window.addEventListener('keydown', (e) => {
+    if (e.code === "Space") startPop();
+});
+window.addEventListener('keyup', (e) => {
+    if (e.code === "Space") endPop();
+});
+
+console.log("POPKIM ready for spam clicking.");
+
+</script>
 </body>
 </html>
