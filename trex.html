@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Escape from Phat</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: 'Courier New', Courier, monospace; background: #f7f7f7; }
+        #gameCanvas { display: block; background: #fff; border-bottom: 2px solid #535353; margin: 0 auto; }
+        .ui { text-align: center; color: #535353; }
+        #instructions { margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <h1>Run, Kim, Run!</h1>
+        <p>Score: <span id="score">0</span></p>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div class="ui" id="instructions">Press <b>Space</b> or <b>Tap</b> to Jump</div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreElement = document.getElementById('score');
+
+        canvas.width = 800;
+        canvas.height = 200;
+
+        // Game Variables
+        let score = 0;
+        let gameSpeed = 5;
+        let isGameOver = false;
+        let animationId;
+
+        // The Runner (Your Friend)
+        const runner = {
+            x: 50,
+            y: 150,
+            width: 40,
+            height: 40,
+            color: '#ff4757', // Placeholder color
+            dy: 0,
+            jumpForce: 12,
+            gravity: 0.6,
+            grounded: false
+        };
+
+        // Obstacles
+        const obstacles = [];
+
+        function spawnObstacle() {
+            const height = 30 + Math.random() * 30;
+            obstacles.push({
+                x: canvas.width,
+                y: canvas.height - height,
+                width: 20,
+                height: height,
+                color: '#2f3542'
+            });
+        }
+
+        function update() {
+            if (isGameOver) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Gravity & Jump
+            runner.dy += runner.gravity;
+            runner.y += runner.dy;
+
+            if (runner.y + runner.height > canvas.height) {
+                runner.y = canvas.height - runner.height;
+                runner.dy = 0;
+                runner.grounded = true;
+            }
+
+            // Draw Runner
+            ctx.fillStyle = runner.color;
+            ctx.fillRect(runner.x, runner.y, runner.width, runner.height);
+            // Label for "Friend 1"
+            ctx.fillStyle = "black";
+            ctx.fillText("Kim", runner.x, runner.y - 5);
+
+            // Handle Obstacles
+            if (Math.random() < 0.02) spawnObstacle();
+
+            obstacles.forEach((obs, index) => {
+                obs.x -= gameSpeed;
+                ctx.fillStyle = obs.color;
+                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
+
+                // Collision Detection
+                if (
+                    runner.x < obs.x + obs.width &&
+                    runner.x + runner.width > obs.x &&
+                    runner.y < obs.y + obs.height &&
+                    runner.y + runner.height > obs.y
+                ) {
+                    endGame();
+                }
+
+                if (obs.x + obs.width < 0) {
+                    obstacles.splice(index, 1);
+                    score++;
+                    scoreElement.innerText = score;
+                    if (score % 10 === 0) gameSpeed += 0.2;
+                }
+            });
+
+            animationId = requestAnimationFrame(update);
+        }
+
+        function endGame() {
+            isGameOver = true;
+            cancelAnimationFrame(animationId);
+            ctx.fillStyle = "rgba(0,0,0,0.5)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "white";
+            ctx.font = "30px Arial";
+            ctx.textAlign = "center";
+            ctx.fillText("OH NO! Phat CAUGHT YOU!", canvas.width / 2, canvas.height / 2);
+            ctx.font = "15px Arial";
+            ctx.fillText("Press Space to Try Again", canvas.width / 2, canvas.height / 2 + 40);
+        }
+
+        function resetGame() {
+            score = 0;
+            scoreElement.innerText = score;
+            obstacles.length = 0;
+            gameSpeed = 5;
+            isGameOver = false;
+            runner.y = 150;
+            update();
+        }
+
+        // Input Handling
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                if (isGameOver) {
+                    resetGame();
+                } else if (runner.grounded) {
+                    runner.dy = -runner.jumpForce;
+                    runner.grounded = false;
+                }
+            }
+        });
+
+        canvas.addEventListener('touchstart', () => {
+             if (isGameOver) {
+                    resetGame();
+                } else if (runner.grounded) {
+                    runner.dy = -runner.jumpForce;
+                    runner.grounded = false;
+                }
+        });
+
+        update();
+    </script>
+</body>
+</html>
